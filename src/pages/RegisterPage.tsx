@@ -45,7 +45,14 @@ export const RegisterPage: React.FC = () => {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please check details and try again.');
+      const serverMsg = err.response?.data?.message;
+      const details = err.response?.data?.details;
+      let detailedMsg = serverMsg || 'Registration failed. Please check details and try again.';
+      if (details && typeof details === 'object') {
+        const fieldErrors = Object.values(details).join(', ');
+        if (fieldErrors) detailedMsg = `${serverMsg}: ${fieldErrors}`;
+      }
+      setError(detailedMsg);
     } finally {
       setLoading(false);
     }
